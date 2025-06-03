@@ -9,7 +9,7 @@ modelo = joblib.load('modelo_xgboost.pkl')
 medianas = joblib.load('medianas.pkl')
 
 app = Dash(__name__, 
-           external_stylesheets=[dbc.themes.BOOTSTRAP])
+           external_stylesheets=[dbc.themes.FLATLY])
 
 formulario = dbc.Container([
     html.P("Preencha as informações abaixo e clique em prever para rodar o modelo", className="text-center mb-5"),
@@ -120,9 +120,9 @@ formulario = dbc.Container([
     ])
 
 app.layout = html.Div([
-        html.H1("Previsão de doença cardíaca", className="text-center mt-5"),
-        formulario,
-        html.Div(id='previsao')
+    html.H1("Previsão de doença cardíaca", className="text-center mt-5"),
+    formulario,
+    html.Div(id='previsao')
 ])
 
 @app.callback(
