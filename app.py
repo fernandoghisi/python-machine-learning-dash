@@ -1,35 +1,39 @@
-from ucimlrepo import fetch_ucirepo
-import plotly.express as px
 from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
+import paginas
 
-heart_disease = fetch_ucirepo(id=45)
-dados = heart_disease.data.features
-#print(dados.head())
+app = Dash(__name__, external_stylesheets=['assets/main.css', dbc.themes.FLATLY])
 
-figura_histograma = px.histogram(dados, x='age', title='Histograma de idades')
-div_do_histograma = html.Div([
-            html.H2('Histograma de idades'),
-            dcc.Graph(figure=figura_histograma),
-        ])
+navegacao = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("Gráficos", href="/graficos")),
+        dbc.NavItem(dbc.NavLink("Formulário", href="/formulario")),
+    ],
+    brand="Dashboard",
+    brand_href="/",
+    color="primary",
+    dark=True,
+)
 
-dados["doenca"] = (heart_disease.data.targets > 0) * 1
-
-# boxplot das idades por doenca, colorido por doenca
-figura_boxplot = px.box(dados, x='doenca', y='age', color='doenca', title='Boxplot de idades')
-#figura_boxplot = px.box(dados, x='doenca', y='age', title='Boxplot de idades')
-div_do_boxplot = html.Div([
-            html.H2('Boxplot de idades'),
-            dcc.Graph(figure=figura_boxplot)
-        ])
-
-app = Dash(__name__)
 app.layout = html.Div([
-        html.H1('Análise de dados do UCI Repository Heart Disease'),
-        div_do_histograma,
-        div_do_boxplot
-    ])
+    dcc.Location(id='url', refresh=False),
+    navegacao,
+    html.Div(id='conteudo')
+])
 
-# podemos adicionar de forma dinamica ao nosso layout
-# app.layout.children.append(div_do_boxplot)
+@app.callback(
+    Output('conteudo', 'children'),
+    [Input('url', 'pathname')]    
+)
+def mostrar_pagina(pathname):
+    if pathname == '/formulario':
+        return html.P('formulario')
+    elif pathname == '/graficos':
+        return paginas.graficos.layout
+    else:
+        return html.P('pagina inicial')
+
+
 
 app.run_server(debug=True)
